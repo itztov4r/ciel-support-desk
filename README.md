@@ -4,6 +4,8 @@
 
 Projet pédagogique de portfolio pour le Bac pro CIEL : transformer une demande de support en intervention documentée, avec priorité, statut et notes de résolution.
 
+[**Ouvrir la démonstration en ligne**](https://itztov4r.github.io/ciel-support-desk/)
+
 ## Essayer
 
 Téléchargez le dépôt et ouvrez `index.html` dans un navigateur récent. Aucun paquet à installer. Cliquez sur **Charger un exemple** pour découvrir trois interventions fictives. Vous pouvez aussi lancer `python -m http.server 8000` puis ouvrir `http://localhost:8000`.
