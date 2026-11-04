@@ -11,3 +11,5 @@ jobs:
         with:
           node-version: '22'
       - run: node --check script.js
+      - run: node --test tests/*.test.js
+
