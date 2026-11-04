@@ -50,14 +50,14 @@ $('ticket-form').onsubmit=e=>{
   const ticket={id:existing?.id||crypto.randomUUID(),created:existing?.created||new Date().toISOString(),title,asset};
   for(const field of ['category','priority','status','description','notes']) ticket[field]=$(field).value;
   const next=existing?tickets.map(t=>t.id===ticket.id?ticket:t):[ticket,...tickets];
-  if(persist(next)){tickets=next;$('feedback').textContent='Intervention enregistrée.';render();$('editor').close();}
+  const saved=persist(next);tickets=next;if(saved)$('feedback').textContent='Intervention enregistrée.';render();$('editor').close();
 };
 for(const field of ['title','asset']) $(field).oninput=()=>$(field).setCustomValidity('');
 for(const field of ['search','filter','priority-filter']) $(field).addEventListener('input',render);
 $('demo').onclick=()=>{
   const examples=[['Connexion réseau indisponible','PC-ACCUEIL-01','Réseau','Haute','Nouveau'],['Installation du logiciel bureautique','PC-SALLE-04','Logiciel','Normale','En cours'],['Remplacement du câble écran','PC-ATELIER-02','Matériel','Basse','Résolu']];
   const next=[...tickets];for(const [title,asset,category,priority,status] of examples){const id='demo-'+asset;if(!next.some(t=>t.id===id))next.push({id,title,asset,category,priority,status,description:'Exemple fictif pour découvrir le fonctionnement.',notes:status==='Résolu'?'Câble remplacé et affichage vérifié.':'',created:new Date().toISOString()});}
-  if(persist(next)){tickets=next;$('feedback').textContent='Exemples ajoutés sans remplacer vos interventions.';render();}
+  const saved=persist(next);tickets=next;if(saved)$('feedback').textContent='Exemples ajoutés sans remplacer vos interventions.';render();
 };
 function csvValue(value){let v=String(value);if(/^[\s]*[=+@-]/.test(v))v="'"+v;return '"'+v.replaceAll('"','""')+'"';}
 $('export').onclick=()=>{
@@ -66,3 +66,4 @@ $('export').onclick=()=>{
   const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='interventions-ciel.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
 render();
+
