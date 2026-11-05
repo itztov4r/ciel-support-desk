@@ -12,7 +12,7 @@ try {
 } catch { $('feedback').textContent = 'Stockage indisponible ou données invalides. Vous pouvez travailler dans cette session.'; }
 function persist(next) {
   try { localStorage.setItem(KEY, JSON.stringify(next)); }
-  catch { $('feedback').textContent = 'Enregistrement impossible : stockage plein ou bloqué. Exportez vos données avant de quitter.'; return false; }
+  catch { $('feedback').textContent = 'Stockage bloqué ou plein : modifications conservées uniquement pendant cette session. Exportez le CSV avant de quitter ou recharger.'; return true; }
   return true;
 }
 function cell(row, text) { const td = document.createElement('td'); td.textContent = text; row.append(td); return td; }
