@@ -4,15 +4,16 @@ const KEY = 'ciel-support-desk-v1';
 const statuses = ['Nouveau', 'En cours', 'Résolu'];
 const priorities = ['Normale', 'Haute', 'Basse'];
 let tickets = [];
+let sessionOnly = false;
 const valid = t => t && typeof t.id === 'string' && ['title','asset','category','description','notes','created'].every(k => typeof t[k] === 'string') && statuses.includes(t.status) && priorities.includes(t.priority);
 try {
   const data = JSON.parse(localStorage.getItem(KEY) || '[]');
   if (!Array.isArray(data) || !data.every(valid)) throw new Error();
   tickets = data;
-} catch { $('feedback').textContent = 'Stockage indisponible ou données invalides. Vous pouvez travailler dans cette session.'; }
+} catch { sessionOnly = true; $('feedback').textContent = 'Stockage indisponible ou données invalides. Les modifications resteront en mémoire pendant cette session uniquement.'; }
 function persist(next) {
-  try { localStorage.setItem(KEY, JSON.stringify(next)); }
-  catch { $('feedback').textContent = 'Enregistrement impossible : stockage plein ou bloqué. Exportez vos données avant de quitter.'; return false; }
+  try { localStorage.setItem(KEY, JSON.stringify(next)); sessionOnly = false; }
+  catch { sessionOnly = true; return true; }
   return true;
 }
 function cell(row, text) { const td = document.createElement('td'); td.textContent = text; row.append(td); return td; }
@@ -50,14 +51,14 @@ $('ticket-form').onsubmit=e=>{
   const ticket={id:existing?.id||crypto.randomUUID(),created:existing?.created||new Date().toISOString(),title,asset};
   for(const field of ['category','priority','status','description','notes']) ticket[field]=$(field).value;
   const next=existing?tickets.map(t=>t.id===ticket.id?ticket:t):[ticket,...tickets];
-  if(persist(next)){tickets=next;$('feedback').textContent='Intervention enregistrée.';render();$('editor').close();}
+  if(persist(next)){tickets=next;$('feedback').textContent=sessionOnly ? 'Intervention conservée uniquement pendant cette session. Exportez le CSV avant de quitter ou recharger.' : 'Intervention enregistrée.';render();$('editor').close();}
 };
 for(const field of ['title','asset']) $(field).oninput=()=>$(field).setCustomValidity('');
 for(const field of ['search','filter','priority-filter']) $(field).addEventListener('input',render);
 $('demo').onclick=()=>{
   const examples=[['Connexion réseau indisponible','PC-ACCUEIL-01','Réseau','Haute','Nouveau'],['Installation du logiciel bureautique','PC-SALLE-04','Logiciel','Normale','En cours'],['Remplacement du câble écran','PC-ATELIER-02','Matériel','Basse','Résolu']];
   const next=[...tickets];for(const [title,asset,category,priority,status] of examples){const id='demo-'+asset;if(!next.some(t=>t.id===id))next.push({id,title,asset,category,priority,status,description:'Exemple fictif pour découvrir le fonctionnement.',notes:status==='Résolu'?'Câble remplacé et affichage vérifié.':'',created:new Date().toISOString()});}
-  if(persist(next)){tickets=next;$('feedback').textContent='Exemples ajoutés sans remplacer vos interventions.';render();}
+  if(persist(next)){tickets=next;$('feedback').textContent=sessionOnly ? 'Exemples ajoutés uniquement pendant cette session. Exportez le CSV avant de quitter ou recharger.' : 'Exemples ajoutés sans remplacer vos interventions.';render();}
 };
 function csvValue(value){let v=String(value);if(/^[\s]*[=+@-]/.test(v))v="'"+v;return '"'+v.replaceAll('"','""')+'"';}
 $('export').onclick=()=>{

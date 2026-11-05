@@ -15,7 +15,7 @@ Téléchargez le dépôt et ouvrez `index.html` dans un navigateur récent. Aucu
 - Création et modification d’interventions, avec équipement, catégorie et description.
 - Cycle Nouveau → En cours → Résolu et notes de diagnostic.
 - Recherche, filtres par statut et priorité, indicateurs calculés.
-- Enregistrement local après chaque modification ; message explicite si le stockage échoue.
+- Enregistrement local après chaque modification ; si le stockage est bloqué ou plein, les interventions restent modifiables en mémoire pendant la session, avec avertissement d’exporter le CSV avant de quitter.
 - Export CSV avec guillemets échappés et neutralisation des cellules de type formule.
 - Interface responsive, navigation clavier et respect de la réduction des animations.
 
